@@ -1,8 +1,315 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using CorePortfolio.Models
+@model IEnumerable<WPViewModel>
+@{
+    ViewBag.Title = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@*Hero Carousel*@
+<div class="container">
+    <div id="carousel1" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="~/img/2.jpg" class="d-block w-100" />
+            </div>
+            <div class="carousel-item ">
+                <img src="~/img/3.jpg" class="d-block w-100" />
+            </div>
+            <div class="carousel-item ">
+                <img src="~/img/1.png" class="d-block w-100" />
+            </div>
+            <div class="carousel-item ">
+                <img src="~/img/4.png" class="d-block w-100" />
+            </div>
+            <div class="carousel-caption d-none d-md-block">
+                <p class="cap">
+                    Chandler Ryan's Portfolio<br />Web and Software Developer<br />
+                    <small class="hidden-xs">Currently working as a web developer at Doubleberry Interactive LLC</small>
+                </p>
+                <p class="text-center">@Html.ActionLink("Request a resume!", "contact", null, new { @class = "btn btn-primary btn-lg" })</p>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div class="container">
+    @*Skills Section*@
+    <div class="card">
+        <div class="card-header">
+            <h1 class="text-center panel-title">Skills</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <ul>
+                        <li>HTML 5</li>
+                        <li>CSS</li>
+                        <li>BootStrap</li>
+                        <li>Javascript</li>
+                        <li>JQuery &amp; JQuery Validation</li>
+                        <li>ASP.Net MVC &amp; Web-API</li>
+                        <li>Hyper-V Hypervisor and VMs</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <ul>
+                        <li>Java</li>
+                        <li>C#</li>
+                        <li>Python</li>
+                        <li>SQL/T-SQL</li>
+                        <li>MySQL</li>
+                        <li>Entity Framework</li>
+                        <li>Git - GitHub - Visual Studio Online</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <ul>
+                        <li>Apache</li>
+                        <li>IIS - IIS Manager local and remote</li>
+                        <li>cpanel</li>
+                        <li>Plesk</li>
+                        <li>Visual Studio</li>
+                        <li>IntelliJ</li>
+                        <li>NetBeans</li>
+                        <li>IDLE</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skillCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="~/img/HTML.jpg" class="d-block w-100" alt="HTML/CSS slide">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="~/img/Java.jpg" class="d-block w-100" alt="Java and C#">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="~/img/JavaScript.jpg" class="d-block w-100" alt="Javascript and JQuery">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="~/img/Servers.jpg" class="d-block w-100" alt="Apache and IIS">
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+    @*Portfolio News Section*@
+    <div class="card">
+        <h2 class="text-center" style="margin-bottom:25px;">Latest Wordpress blog posts. <br /> <small>via Wordpress JSON API</small></h2>
+        <div class="row">
+            @foreach (var post in Model.OrderByDescending(t => t.Date).Take(3))
+            {
+                <div class="col-md-4">
+                    <div class="card blogPanel">
+                            <img class="card-img-top" src="@post.Embedded.WpFeaturedmedia.SingleOrDefault().MediaDetails.Sizes.Full.SourceUrl" />
+                        <div class="card-header">
+                            <h2 class="card-title text-center">@post.Title.Rendered</h2>
+                            <p class="text-center">
+                                @post.Date.ToString("MMMMM d yyyy h:mm")@post.Date.ToString("tt").ToLower()
+                                @{
+                                    string tz = "?";
+                                    if (post.Date.DateTime.IsDaylightSavingTime())
+                                    {
+                                        tz = "CDT";
+                                    }
+                                    else { tz = "CST"; }
+                                }
+                                @tz
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-justify blogExcerpt">
+                                @Html.Raw(post.Excerpt.Rendered)
+                            </div>
+                            <div class="readMore text-center">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#@post.Id">Read More</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Post Modal-->
+                <div class="modal fade bs-example-modal-lg" id="@post.Id" tabindex="-1" role="dialog" aria-labelledby="@post.Id">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">@post.Title.Rendered</h4>
+                            </div>
+                            <div class="modal-body">
+                                @Html.Raw(post.Content.Rendered)
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    @*Old News Section*@
+        <h2 class="text-center" style="margin-bottom:25px;">Static Content Updates</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title text-center">Getting started</h2>
+                </div>
+                <div class="card-body more">
+                    <p class="text-center">May 23, 2019</p>
+                    <p class="text-justify">
+                        TODO: before I axe this section, I would like to add some ajax pagination to the Wordpress news feed. Have it
+                        load in 2 more pages of news posts, so would allow to see the latest 9 posts on this page.
+                    </p>
+                    <br />
+                    <p class="text-center">June 10, 2018</p>
+                    <p class="text-justify">
+                        I have accepted an internship and will be working with php. To integrate those workings with this portfolio
+                        I will be removing this section and I will create a new navigation link to a blog which will be a Word Press site
+                        that I will theme to correspond directly to this site.
+                    </p>
+                    <p>
+                        Also I failed to mention in the May 15th update to the current project. I have began work on version 2 of this
+                        portfolio which will have all the sensitive info in a settings file outside the repository so I can publicly
+                        post the source on GitHub. Also will be implementing authentication to evolve this portfolio to a mini
+                        content management system. More details to follow in the new blog section.
+                    </p>
+                    <br />
+                    <p class="text-center">April 11, 2018</p>
+                    <p class="text-justify">
+                        Discovered a logic error with handling the form data in the contact form. This should be
+                        working correctly now.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title text-center">Current Project</h2>
+                </div>
+                <div class="card-body text-justify more">
+                    <p>
+                        May 23, 2019 - The project is back. I have remade it with Laravel. I have been working on it from the ground up
+                        following the Laracast: Laravel from scratch. You can currently see the project published in the state I turned in
+                        the php class final project here:
+                    </p>
+                    <a href="https://fitness-battle.chandler.rocks" target="_blank" class="btn btn-info" style="display:block; margin: 20px auto; width:50%; ">Fitness Battle</a>
+
+                    <p class="text-danger">
+                        May 15, 2018 - This project has been put on hold, until I secure my internship and in the
+                        time I am not job hunting, I will be working on this portfolio and then afterwards complete all the alternate
+                        final projects that were listed as options as potential final projects.
+                    </p>
+
+                    <hr />
+
+                    <p>
+                        This will be the second web application for the site. It is a MVC web application called StepApp. It will
+                        allow users to create an account. With the account users will be able to enter step totals. Future updates
+                        will include ability to import step totals from an exported Apple health app (later direct calls to the
+                        health-kit api) and addition of weekly/monthly step total challenges for motivation.
+                    </p>
+                    <p>
+                        This project will make use of bootstrap 3.3.7, jquery and validation, C#, MSSQL, Entity Framework, SSL and
+                        ASP.NET identities with alternate social log-ins.
+                    </p>
+                    @*<p class="text-center">
+                            You can see the initial publishing of this application<br /><br />
+                            <a href="https://stepapp.chandler-ryan.com" class="btn btn-primary btn-lg">First App</a>
+                        </p>*@
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title text-center">School Project</h2>
+                </div>
+                <div class="card-body text-justify more">
+                    <p>
+                        I have completed the class this project references in the spring of 2018. After the completion of this class
+                        I have made no additional updates. The School project I worked on next that was worth listing here is the project
+                        in the previous column that I did for the PHP class Fitness Battle.
+                    </p>
+                    <p>
+                        I have added a school project to my site. This is also a current project as it is what I am working on
+                        during my Tuesday MVC class at school. (class completed) It is an online store site with a database of products and contains
+                        authentication for the individual customers.
+                    </p>
+
+                    <p>
+                        For the final project, the class break off into groups of 2 or 3 and picked from a list of
+                        project suggestions. I was in a group of 2 and we selected the following project:
+                    </p>
+
+                    <p>
+                        <i>
+                            Employee login including managing discounts. You will need to modify the database schema in order to
+                            accomplish this. Employees should be able to add/edit and delete discounts. Codes should be randomly generated
+                            by your program
+                        </i>
+                    </p>
+
+                    <p>
+                        In this project we used the authentication setup in an earlier lesson setting the stage for this project.
+                        I will do this after I arrange my internship as time is running out. I will be putting the project currently
+                        listed as current Project "First App" on hold till my internship is set and I complete all of the possible final
+                        projects that were available.
+                    </p>
+
+                    <p class="text-center">
+                        The current application is below <br /><br />
+                        <a href="https://northwind.chandler-ryan.com" class="btn btn-warning btn-lg" target="_blank">Northwind</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var more = '.more';
+            var blogPanel = '.blogPanel';
+
+            $(window).on("load", function () {
+                panelBodyHeight(blogPanel);
+                panelBodyHeight(more);
+            });
+
+            $(window).resize(function () {
+                panelBodyHeight(more);
+                panelBodyHeight(blogPanel);
+            });
+            function panelBodyHeight(e) {
+                //console.log($(window).width());
+                var height = 0;
+                if ($(window).width() > 974) {
+                    $(e).each(function () {
+                        $(this).css('height', 'auto');
+                    });
+                    $(e).each(function () {
+                        if ($(this).height() > height) {
+                            height = $(this).height();
+                            console.log(height);
+                        };
+                    });
+                    $(e).each(function () {
+                        $(this).css('height', (height + 100));
+                    });
+                }
+                else {
+                    $(e).each(function () {
+                        var newHeight = 0
+                        $(this).css('height', 'auto');
+                        newHeight = $(this).height();
+                        $(this).css('height', (newHeight + 20));
+                    });
+                }
+            }
+        });
+
+    </script>
+}
